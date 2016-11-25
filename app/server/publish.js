@@ -1,3 +1,6 @@
+import { Meteor } from 'meteor/meteor';
+import { Participants } from '../lib/collections';
+
 Meteor.publish('userData', function() {
     if (this.userId) {
         return getUserWithAdminField(this.userId);
@@ -8,9 +11,9 @@ Meteor.publish('userData', function() {
 });
 
 Meteor.publish('participants', function() {
-    var fields = { '_id': 1, 'drawn': 1 };
+    let fields = { '_id': 1, 'drawn': 1 };
     if (this.userId) {
-        var users = getUserWithAdminField(this.userId).fetch();
+        let users = getUserWithAdminField(this.userId).fetch();
         if (users.length && users[0].isAdmin) {
             Object.assign(fields, { 'name': 1, 'drawnParticipant': 1 });
         }

@@ -1,7 +1,12 @@
+import { Meteor } from 'meteor/meteor';
+import { Template } from 'meteor/templating';
+import { Session } from 'meteor/session';
+import { Participants } from '../lib/collections';
+
 Meteor.subscribe('userData');
 Meteor.subscribe('participants');
 
-var targetDate = moment.utc('2015-12-04 19:00:00');
+let targetDate = moment.utc('2016-12-23 18:00:00');
 Session.setDefault('remaining', targetDate.fromNow());
 
 Meteor.setInterval(function() {
@@ -18,15 +23,15 @@ Template.statistics.helpers({
     },
 
     drawnCount: function() {
-        var participantCount = Participants.find().count();
-        var drawnCount = Participants.find({ drawn: true }).count();
+        let participantCount = Participants.find().count();
+        let drawnCount = Participants.find({ drawn: true }).count();
         return drawnCount + ' (' + (drawnCount / participantCount * 100).toFixed(2) + '%)';
     }
 });
 
 Template.admin.helpers({
     hasAdminPermission: function() {
-        var user = Meteor.user();
+        let user = Meteor.user();
         return (user && user.isAdmin);
     }
 });
@@ -34,7 +39,7 @@ Template.admin.events({
     'click .add-item': function() {
         // This is very ugly
         // TODO: Replace with better solution
-        var participant = prompt('Please enter the new name', '');
+        let participant = prompt('Please enter the new name', '');
 
         Meteor.call('addParticipant', participant);
     }
@@ -53,14 +58,14 @@ Template.adminListItem.helpers({
 });
 Template.adminListItem.events({
     'change select': function(event) {
-        var participant = this.name;
-        var selected = $(event.target).val();
+        let participant = this.name;
+        let selected = $(event.target).val();
 
         Meteor.call('setDrawnParticipant', participant, selected);
     },
 
     'click .remove-item': function() {
-        var participant = this.name;
+        let participant = this.name;
 
         Meteor.call('removeParticipant', participant);
     }

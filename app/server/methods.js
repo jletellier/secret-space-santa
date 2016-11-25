@@ -1,3 +1,7 @@
+import { Meteor } from 'meteor/meteor';
+import { Accounts } from 'meteor/accounts-base';
+import { Participants } from '../lib/collections';
+
 Accounts.onCreateUser(function(options, user) {
     // Give the first users that registers 'admin' rights
     if (Meteor.users.find().count() === 0) {
@@ -32,9 +36,9 @@ Meteor.methods({
 });
 
 function clearCorrespondingDrawnAttribute(participant) {
-    var entry = Participants.findOne({ name: participant });
+    let entry = Participants.findOne({ name: participant });
     if (entry) {
-        var oldSelected = entry.drawnParticipant;
+        let oldSelected = entry.drawnParticipant;
         if (oldSelected) {
             Participants.update({ name: oldSelected }, { $set: { drawn: false } });
         }
