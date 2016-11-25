@@ -1,6 +1,6 @@
 # Secret Space Santa
 
-This application was built to manage the upcoming Secret Santa event for the Young ESRIN community.
+This application was originally built to manage the upcoming Secret Santa event for the Young ESRIN community in 2015.
 
 It uses cutting-edge technology to handle the *vast amount of data*, eg.
 
