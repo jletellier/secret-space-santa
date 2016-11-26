@@ -9,7 +9,7 @@ It uses cutting-edge technology to handle the *vast amount of data*, eg.
                  
 ## Important Note
 
-Development of the entire application took less than 3 hours. It was just a small exercise to showcase how fast one can prototype an application with Meteor. Don't take this little experiment too serious!
+The initial development of the entire application took less than 3 hours. It was just a small exercise to showcase how fast one can prototype an application with Meteor. Don't take this little experiment too seriously!
 
 ## Contributing
 

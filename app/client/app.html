@@ -13,12 +13,10 @@
         <div class="row">
             <div class="col-md-8">
                 <p class="bg-danger">
-                    This application was built to manage the upcoming Secret Santa event for the Young ESRIN community.<br>
-                    It uses cutting-edge technology to handle the <em>vast amount of data</em>, eg.
-                    <a href="https://www.meteor.com/">Meteor</a> and
-                    <a href="https://www.mongodb.com/">mongoDB</a>.<br>
                     If you want to contribute to this project, check out <a href="https://github.com/jletellier/secret-space-santa">this GitHub repository</a>.
                 </p>
+
+                {{> user }}
 
                 {{> admin }}
             </div>
@@ -45,6 +43,15 @@
     </div>
 </template>
 
+<template name="user">
+    {{# if queryUser }}
+        <div class="sss-user bg-warning">
+            <p>Hi <span>{{ queryUser.name }}</span>,</p>
+            <p>You are the Secret Santa for: <span class="user-drawn text-success"><strong>{{ queryUser.drawnParticipant }}</strong></span>.</p>
+        </div>
+    {{/ if }}
+</template>
+
 <template name="admin">
     <div class="sss-admin bg-warning">
         {{# if currentUser }}
@@ -52,8 +59,12 @@
                 <div class="clearfix">
                     <div class="pull-left"><h2>Santa Claus' Area</h2></div>
                     <div class="pull-right">
+                        <button type="button" class="auto-assign btn btn-primary">
+                            <span class="glyphicon glyphicon-random"></span>
+                            Auto assign
+                        </button>
                         <button type="button" class="add-item btn btn-success">
-                            <span class="remove-item glyphicon glyphicon-plus-sign"></span>
+                            <span class="glyphicon glyphicon-plus-sign"></span>
                             Add participant
                         </button>
                     </div>
@@ -67,7 +78,7 @@
 </template>
 
 <template name="adminList">
-    <table>
+    <table class="table-striped">
         <thead><tr>
             <th>Participant</th>
             <th>Drawn participant</th>
@@ -82,18 +93,26 @@
 </template>
 
 <template name="adminListItem">
-    <tr class="{{# if drawn }}bg-success{{/ if }}">
+    <tr>
         <td>{{ name }}</td>
         <td>
-            <select class="form-control">
-                <option>{{ drawnParticipant }}</option>
-                {{# each freeParticipants }}
-                    <option>{{ name }}</option>
-                {{/ each }}
-            </select>
+            {{# if reveal }}
+                <select class="form-control">
+                    <option>{{ drawnParticipant }}</option>
+                    {{# each freeParticipants }}
+                        <option>{{ name }}</option>
+                    {{/ each }}
+                </select>
+            {{ else }}
+                <span class="glyphicon glyphicon-user"></span> (hidden)
+            {{/ if }}
         </td>
         <td>
-            <span class="remove-item glyphicon glyphicon-minus-sign"></span>
+            <span class="sss-item reveal-item glyphicon
+                {{# if reveal }}glyphicon-eye-close{{ else }}glyphicon-eye-open{{/ if }}">
+            </span>
+            <span class="sss-item remove-item glyphicon glyphicon-trash"></span>
+            <span class="sss-item share-item glyphicon glyphicon-share"></span>
         </td>
     </tr>
 </template>

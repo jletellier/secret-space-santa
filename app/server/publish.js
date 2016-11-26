@@ -11,11 +11,11 @@ Meteor.publish('userData', function() {
 });
 
 Meteor.publish('participants', function() {
-    let fields = { '_id': 1, 'drawn': 1 };
+    let fields = { 'drawn': 1 };
     if (this.userId) {
         let users = getUserWithAdminField(this.userId).fetch();
         if (users.length && users[0].isAdmin) {
-            Object.assign(fields, { 'name': 1, 'drawnParticipant': 1 });
+            Object.assign(fields, { '_id': 1, 'name': 1, 'drawnParticipant': 1 });
         }
     }
 

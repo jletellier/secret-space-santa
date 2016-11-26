@@ -19,6 +19,10 @@
     display: block
 }
 
+.sss-user .user-drawn {
+    font-size: 1.5em;
+}
+
 .sss-admin p {
     font-size: 1.5em;
 }
@@ -43,7 +47,7 @@
     padding: 2px 5px;
     border: 1px solid #460103;
 }
-.sss-admin .remove-item {
+.sss-admin .sss-item {
     cursor: pointer;
 }
 

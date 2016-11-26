@@ -1,0 +1,14 @@
+app:
+  image: ulexus/meteor:build
+  ports:
+    - "8003:80"
+  links:
+    - mongo
+  environment:
+    - MONGO_URL=mongodb://mongo/app
+    - ROOT_URL=http://santa.jletellier.de
+  volumes:
+    - ./app:/home/meteor/src
+
+mongo:
+  image: mongo:latest

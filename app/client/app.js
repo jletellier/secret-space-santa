@@ -1,21 +1,34 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
-import { Session } from 'meteor/session';
+import { ReactiveVar } from 'meteor/reactive-var';
 import { Participants } from '../lib/collections';
 
 Meteor.subscribe('userData');
 Meteor.subscribe('participants');
 
 let targetDate = moment.utc('2016-12-23 18:00:00');
-Session.setDefault('remaining', targetDate.fromNow());
+let remaining = new ReactiveVar(targetDate.fromNow());
 
 Meteor.setInterval(function() {
-    Session.set('remaining', targetDate.fromNow());
+    remaining.set(targetDate.fromNow());
 }, 5000);
+
+let queryUser = new ReactiveVar(null);
+
+Meteor.startup(function() {
+    console.log(location.search.slice(3));
+    let id = location.search.slice(3);
+    if (id.length) {
+        Meteor.call('getQueryUser', id, function(error, result) {
+            queryUser.set(result);
+            console.log(result);
+        });
+    }
+});
 
 Template.statistics.helpers({
     remaining: function() {
-        return Session.get('remaining');
+        return remaining.get();
     },
 
     participantCount: function() {
@@ -26,6 +39,12 @@ Template.statistics.helpers({
         let participantCount = Participants.find().count();
         let drawnCount = Participants.find({ drawn: true }).count();
         return drawnCount + ' (' + (drawnCount / participantCount * 100).toFixed(2) + '%)';
+    }
+});
+
+Template.user.helpers({
+    queryUser: function() {
+        return queryUser.get();
     }
 });
 
@@ -42,6 +61,9 @@ Template.admin.events({
         let participant = prompt('Please enter the new name', '');
 
         Meteor.call('addParticipant', participant);
+    },
+    'click .auto-assign': function() {
+        Meteor.call('autoAssign');
     }
 });
 
@@ -51,9 +73,15 @@ Template.adminList.helpers({
     }
 });
 
+Template.adminListItem.onCreated(function() {
+    this.reveal = new ReactiveVar(false);
+});
 Template.adminListItem.helpers({
     freeParticipants: function() {
         return Participants.find({ drawn: false }, { sort: { name: 1 } });
+    },
+    reveal: function() {
+        return Template.instance().reveal.get();
     }
 });
 Template.adminListItem.events({
@@ -63,10 +91,15 @@ Template.adminListItem.events({
 
         Meteor.call('setDrawnParticipant', participant, selected);
     },
-
     'click .remove-item': function() {
-        let participant = this.name;
-
-        Meteor.call('removeParticipant', participant);
+        Meteor.call('removeParticipant', this.name);
+    },
+    'click .reveal-item': function() {
+        let instance = Template.instance();
+        instance.reveal.set(!instance.reveal.get());
+    },
+    'click .share-item': function() {
+        // TODO: Replace with better solution
+        alert('?u=' + this._id);
     }
 });
