@@ -6,7 +6,7 @@ import { Participants } from '../lib/collections';
 Meteor.subscribe('userData');
 Meteor.subscribe('participants');
 
-let targetDate = moment.utc('2016-12-23 18:00:00');
+let targetDate = moment.utc('2017-12-23 18:00:00');
 let remaining = new ReactiveVar(targetDate.fromNow());
 
 Meteor.setInterval(function() {
@@ -99,7 +99,9 @@ Template.adminListItem.events({
         instance.reveal.set(!instance.reveal.get());
     },
     'click .share-item': function() {
-        // TODO: Replace with better solution
-        alert('?u=' + this._id);
+        let $modal = $('.sss-share-item-modal');
+        $modal.modal('show');
+        let $content = $modal.find('.sss-share-item-modal-content');
+        $content.text('?u=' + this._id);
     }
 });
