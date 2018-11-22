@@ -1,10 +1,6 @@
-FROM debian
+FROM mhart/alpine-node:8
 
-RUN apt-get update
-RUN apt-get install -y curl
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get install -y nodejs
-RUN apt-get install -y build-essential
+RUN apk add --no-cache make gcc g++ python
 
 COPY ./build/bundle /usr/src/app
 RUN cd /usr/src/app/programs/server && npm install

@@ -1,13 +1,16 @@
-app:
-  build: .
-  ports:
-    - "3000:80"
-  links:
-    - mongo
-  environment:
-    - MONGO_URL=mongodb://mongo/app
-    - ROOT_URL=http://localhost:3000
-    - PORT=80
+version: '3'
 
-mongo:
-  image: mongo:latest
+services:
+  app:
+    build: .
+    ports:
+      - "3000:80"
+    links:
+      - mongo
+    environment:
+      - MONGO_URL=mongodb://mongo/app
+      - ROOT_URL=http://localhost:3000
+      - PORT=80
+
+  mongo:
+    image: mongo:latest
