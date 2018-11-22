@@ -1,9 +1,15 @@
 import { Meteor } from 'meteor/meteor';
-import { Groups, Participants } from './collections';
 import moment from 'moment';
+
+import { Groups, Participants } from './collections';
+import { checkGroupCred } from './security';
 
 Meteor.methods({
     addGroup(groupName) {
+        if (!this.userId) {
+            return null;
+        }
+
         let targetDate = moment().set({ 'month': 11, 'date': 24, 'hour': 18 });
 
         const groupId = Groups.insert({ 
@@ -16,15 +22,27 @@ Meteor.methods({
     },
 
     removeGroup(groupId) {
+        if (!checkGroupCred(this.userId, groupId)) {
+            return null;
+        }
+
         Participants.remove({ groupId });
         Groups.remove(groupId);
     },
 
     changeTargetDate(groupId, targetDate) {
+        if (!checkGroupCred(this.userId, groupId)) {
+            return null;
+        }
+
         Groups.update(groupId, { $set: { targetDate } });
     },
     
     setDrawnParticipant(groupId, participant, selected) {
+        if (!checkGroupCred(this.userId, groupId)) {
+            return null;
+        }
+
         clearCorrespondingDrawnAttribute(groupId, participant);
 
         Participants.update(
@@ -38,6 +56,10 @@ Meteor.methods({
     },
 
     removeParticipant(groupId, participant) {
+        if (!checkGroupCred(this.userId, groupId)) {
+            return null;
+        }
+
         clearCorrespondingDrawnAttribute(groupId, participant);
 
         // Clear corresponding drawnParticipant field
@@ -50,6 +72,10 @@ Meteor.methods({
     },
 
     addParticipant(groupId, participantName) {
+        if (!checkGroupCred(this.userId, groupId)) {
+            return null;
+        }
+
         Participants.insert({ 
             name: participantName, 
             drawn: false, 
@@ -59,6 +85,10 @@ Meteor.methods({
     },
 
     autoAssign(groupId) {
+        if (!checkGroupCred(this.userId, groupId)) {
+            return null;
+        }
+
         let participants = Participants.find({ groupId }).fetch();
         let names = participants.map((obj) => obj.name);
         let assigned;
@@ -77,6 +107,10 @@ Meteor.methods({
     },
 
     getQueryGroup(id) {
+        if (!checkGroupCred(this.userId, id)) {
+            return null;
+        }
+
         return Groups.findOne({ _id: id });
     },
 

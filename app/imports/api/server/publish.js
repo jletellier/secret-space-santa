@@ -1,5 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 import { Groups, Participants } from '../collections';
+import { checkGroupCred } from '../security';
 
 Meteor.publish('userData', function() {
     if (this.userId) {
@@ -11,25 +12,19 @@ Meteor.publish('userData', function() {
 });
 
 Meteor.publish('participants', function(groupId) {
-    let fields = { 'groupId': 1, 'drawn': 1 };
-
-    if (this.userId) {
-        let group = Groups.findOne(groupId);
-        if (group && group.adminUser === this.userId) {
-            Object.assign(fields, { '_id': 1, 'name': 1, 'drawnParticipant': 1 });
-        }
+    if (!checkGroupCred(this.userId, groupId)) {
+        return this.ready();
     }
 
-    return Participants.find({ groupId }, { fields });
+    return Participants.find({ groupId });
 });
 
 Meteor.publish('groups', function() {
-    if (this.userId) {
-        return Groups.find({ adminUser: this.userId });
+    if (!this.userId) {
+        return this.ready();
     }
-    else {
-        this.ready();
-    }
+
+    return Groups.find({ adminUser: this.userId });
 });
 
 function getUserWithAdminField(userId) {
