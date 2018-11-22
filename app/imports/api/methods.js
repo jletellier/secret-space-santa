@@ -1,17 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Accounts } from 'meteor/accounts-base';
-import { Participants } from '../lib/collections';
-
-Accounts.onCreateUser(function(options, user) {
-    // Give the first users that registers 'admin' rights
-    if (Meteor.users.find().count() === 0) {
-        user.isAdmin = true;
-    }
-
-    // We still want the default hook's 'profile' behavior.
-    if (options.profile) user.profile = options.profile;
-    return user;
-});
+import { Participants } from './collections';
 
 Meteor.methods({
     setDrawnParticipant(participant, selected) {

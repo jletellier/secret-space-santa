@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Participants } from '../lib/collections';
+import { Participants } from '../collections';
 
 Meteor.publish('userData', function() {
     if (this.userId) {

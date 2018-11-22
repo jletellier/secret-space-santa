@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
-import { Participants } from '../lib/collections';
+import { Participants } from '../imports/api/collections';
 
 Meteor.subscribe('userData');
 Meteor.subscribe('participants');
