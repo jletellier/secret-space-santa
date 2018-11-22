@@ -19,6 +19,10 @@ Meteor.methods({
         Participants.remove({ groupId });
         Groups.remove(groupId);
     },
+
+    changeTargetDate(groupId, targetDate) {
+        Groups.update(groupId, { $set: { targetDate } });
+    },
     
     setDrawnParticipant(groupId, participant, selected) {
         clearCorrespondingDrawnAttribute(groupId, participant);

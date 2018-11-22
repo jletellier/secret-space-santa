@@ -36,7 +36,7 @@ Meteor.startup(() => {
 
     page('/p/:participant', (ctx) => {
         queryGroup.set(null);
-        
+
         const participantId = ctx.params.participant;
         Meteor.call('getQueryParticipant', participantId, (error, result) => {
             queryParticipant.set(result);
@@ -71,6 +71,25 @@ Template.statistics.helpers({
     queryGroup() {
         return queryGroup.get();
     },
+});
+Template.statistics.events({
+    'click .change-date': function() {
+        let group = queryGroup.get();
+        let $modal = $('.sss-change-date-modal');
+        $modal.modal('show');
+        let $input = $modal.find('input');
+        $input.val(moment(group.targetDate).format('YYYY-MM-DDTHH:mm'));
+        let $saveBtn = $modal.find('.save-date');
+        $saveBtn.click(() => {
+            $modal.modal('hide');
+        });
+        $modal.on('hide.bs.modal', () => {
+            let newValue = moment($input.val());
+            if (newValue.isValid()) {
+                Meteor.call('changeTargetDate', group._id, newValue.format());
+            }
+        });
+    }
 });
 
 Template.settings.helpers({

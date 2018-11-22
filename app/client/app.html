@@ -45,6 +45,20 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade sss-change-date-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Set new target date:</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="datetime-local">
+                    <span class="sss-item save-date glyphicon glyphicon-ok"></span>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 <template name="statistics">
@@ -54,6 +68,7 @@
             <p>
                 Event coming up 
                 <span class="text-danger" title="{{ targetDate }}">{{ remaining }}</span>
+                <span class="change-date sss-item glyphicon glyphicon-cog"></span>
             </p>
             <p>Participants: <span class="text-danger">{{ participantCount }}</span></p>
             <p>Participants drawn: <span class="text-danger">{{ drawnCount }}</span></p>
