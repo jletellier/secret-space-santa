@@ -13,23 +13,23 @@
         <div class="row">
             <div class="col-md-8">
                 <p class="bg-danger">
-                    If you want to contribute to this project, check out <a href="https://github.com/jletellier/secret-space-santa">this GitHub repository</a>.
+                    If you want to contribute to this project, check out 
+                    <a href="https://github.com/jletellier/secret-space-santa">
+                        this Git repository</a>
+                    on Github.
                 </p>
-
-                {{> user }}
-
+                
+                {{> participant }}
                 {{> admin }}
             </div>
             <div class="col-md-4">
                 {{> statistics }}
+                
                 <div class="bg-warning sss-login">
                     {{> loginButtons }}
+                    {{> settings }}
                 </div>
             </div>
-        </div>
-
-        <div class="row">
-
         </div>
     </div>
 
@@ -48,29 +48,51 @@
 </body>
 
 <template name="statistics">
-    <div class="bg-danger">
-        <p>Event coming up <span class="text-danger">{{ remaining }}</span></p>
-        <p>Participants: <span class="text-danger">{{ participantCount }}</span></p>
-        <p>Participants drawn: <span class="text-danger">{{ drawnCount }}</span></p>
-    </div>
+    {{# if queryGroup }}
+        <div class="bg-danger">
+            <p>Group name: <span class="text-danger">{{ queryGroup.name }}</span></p>
+            <p>
+                Event coming up 
+                <span class="text-danger" title="{{ targetDate }}">{{ remaining }}</span>
+            </p>
+            <p>Participants: <span class="text-danger">{{ participantCount }}</span></p>
+            <p>Participants drawn: <span class="text-danger">{{ drawnCount }}</span></p>
+        </div>
+    {{/ if }}
 </template>
 
-<template name="user">
-    {{# if queryUser }}
+<template name="settings">
+    {{# if queryGroup }}
+        <a href="/">Show groups</a>
+    {{/ if }}
+</template>
+
+<template name="participant">
+    {{# if queryParticipant }}
         <div class="sss-user bg-warning">
-            <p>Hi <span>{{ queryUser.name }}</span>,</p>
-            <p>You are the Secret Santa for: <span class="user-drawn text-success"><strong>{{ queryUser.drawnParticipant }}</strong></span>.</p>
+            <p>Hi <span>{{ queryParticipant.name }}</span>,</p>
+            <p>You are the Secret Santa for: <span class="user-drawn text-success">
+                <strong>{{ queryParticipant.drawnParticipant }}</strong></span>.
+            </p>
         </div>
     {{/ if }}
 </template>
 
 <template name="admin">
     <div class="sss-admin bg-warning">
-        {{# if currentUser }}
-            {{# if hasAdminPermission }}
-                <div class="clearfix">
-                    <div class="pull-left"><h2>Santa Claus' Area</h2></div>
-                    <div class="pull-right">
+        {{# if loggedIn }}
+            <div class="clearfix">
+                <div class="pull-left">
+                    <h2>
+                        {{# if queryGroup }} 
+                            Santa Claus' Area
+                        {{ else }}
+                            Your Groups
+                        {{/ if }}
+                    </h2>
+                </div>
+                <div class="pull-right">
+                    {{# if queryGroup }}
                         <button type="button" class="auto-assign btn btn-primary">
                             <span class="glyphicon glyphicon-random"></span>
                             Auto assign
@@ -79,14 +101,48 @@
                             <span class="glyphicon glyphicon-plus-sign"></span>
                             Add participant
                         </button>
-                    </div>
+                    {{ else }}
+                        <button type="button" class="add-group btn btn-success">
+                            <span class="glyphicon glyphicon-plus-sign"></span>
+                            Create group
+                        </button>
+                    {{/ if }}
                 </div>
+            </div>
+            {{# if queryGroup }}
                 {{> adminList }}
             {{ else }}
-                <p>You are not Santa Claus. Get out of here!</p>
+                {{> groupList }}
             {{/ if }}
+        {{ else }}
+            <p>Plase log in to manage your groups or to create a new group.</p>
         {{/ if }}
     </div>
+</template>
+
+<template name="groupList">
+    <table class="table-striped">
+        <thead><tr>
+            <th>Group name</th>
+            <th>Target Date</th>
+            <th></th>
+        </tr></thead>
+        <tbody>
+            {{# each groups }}
+                {{> groupListItem }}
+            {{/ each }}
+        </tbody>
+    </table>
+</template>
+
+<template name="groupListItem">
+    <tr class="edit-item">
+        <td><a href="{{ link }}">{{ name }}</a></td>
+        <td>{{ targetDate }}</td>
+        <td>
+            <span class="sss-item remove-item glyphicon glyphicon-trash"></span>
+        </td>
+    </tr>
 </template>
 
 <template name="adminList">

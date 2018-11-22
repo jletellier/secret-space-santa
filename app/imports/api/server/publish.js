@@ -1,5 +1,5 @@
 import { Meteor } from 'meteor/meteor';
-import { Participants } from '../collections';
+import { Groups, Participants } from '../collections';
 
 Meteor.publish('userData', function() {
     if (this.userId) {
@@ -10,16 +10,26 @@ Meteor.publish('userData', function() {
     }
 });
 
-Meteor.publish('participants', function() {
-    let fields = { 'drawn': 1 };
+Meteor.publish('participants', function(groupId) {
+    let fields = { 'groupId': 1, 'drawn': 1 };
+
     if (this.userId) {
-        let users = getUserWithAdminField(this.userId).fetch();
-        if (users.length && users[0].isAdmin) {
+        let group = Groups.findOne(groupId);
+        if (group && group.adminUser === this.userId) {
             Object.assign(fields, { '_id': 1, 'name': 1, 'drawnParticipant': 1 });
         }
     }
 
-    return Participants.find({}, { fields: fields });
+    return Participants.find({ groupId }, { fields });
+});
+
+Meteor.publish('groups', function() {
+    if (this.userId) {
+        return Groups.find({ adminUser: this.userId });
+    }
+    else {
+        this.ready();
+    }
 });
 
 function getUserWithAdminField(userId) {

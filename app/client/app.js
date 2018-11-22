@@ -2,27 +2,44 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
 import page from 'page';
+import moment from 'moment';
 
-import { Participants } from '../imports/api/collections';
+import { Groups, Participants } from '../imports/api/collections';
+
+let queryGroup = new ReactiveVar(null);
+let queryParticipant = new ReactiveVar(null);
 
 Meteor.subscribe('userData');
-Meteor.subscribe('participants');
+Meteor.subscribe('groups');
 
-let targetDate = moment.utc('2017-12-23 18:00:00');
-let remaining = new ReactiveVar(targetDate.fromNow());
-
-Meteor.setInterval(function() {
-    remaining.set(targetDate.fromNow());
-}, 5000);
-
-let queryUser = new ReactiveVar(null);
+Tracker.autorun(() => {
+    let group = queryGroup.get();
+    if (group) {
+        Meteor.subscribe('participants', group._id);
+    }
+});
 
 Meteor.startup(() => {
-    page('/u/:user', (ctx) => {
-        const userId = ctx.params.user;
-        Meteor.call('getQueryUser', userId, function(error, result) {
-            queryUser.set(result);
-            console.log(result);
+    page('/', (ctx) => {
+        queryGroup.set(null);
+        queryParticipant.set(null);
+    });
+
+    page('/g/:group', (ctx) => {
+        queryParticipant.set(null);
+
+        const groupId = ctx.params.group;
+        Meteor.call('getQueryGroup', groupId, (error, result) => {
+            queryGroup.set(result);
+        });
+    });
+
+    page('/p/:participant', (ctx) => {
+        queryGroup.set(null);
+        
+        const participantId = ctx.params.participant;
+        Meteor.call('getQueryParticipant', participantId, (error, result) => {
+            queryParticipant.set(result);
         });
     });
 
@@ -30,81 +47,154 @@ Meteor.startup(() => {
 });
 
 Template.statistics.helpers({
-    remaining: function() {
-        return remaining.get();
+    remaining() {
+        let group = queryGroup.get();
+        let remaining = moment(group.targetDate).fromNow();
+        return remaining;
     },
 
-    participantCount: function() {
+    targetDate() {
+        let group = queryGroup.get();
+        return moment(group.targetDate).format('YYYY-MM-DD HH:mm');
+    },
+
+    participantCount() {
         return Participants.find().count();
     },
 
-    drawnCount: function() {
+    drawnCount() {
         let participantCount = Participants.find().count();
         let drawnCount = Participants.find({ drawn: true }).count();
         return drawnCount + ' (' + (drawnCount / participantCount * 100).toFixed(2) + '%)';
-    }
+    },
+
+    queryGroup() {
+        return queryGroup.get();
+    },
 });
 
-Template.user.helpers({
-    queryUser: function() {
-        return queryUser.get();
+Template.settings.helpers({
+    queryGroup() {
+        return queryGroup.get();
+    },
+});
+
+Template.participant.helpers({
+    queryParticipant() {
+        return queryParticipant.get();
     }
 });
 
 Template.admin.helpers({
-    hasAdminPermission: function() {
+    hasAdminPermission() {
         let user = Meteor.user();
-        return (user && user.isAdmin);
-    }
+        let group = queryGroup.get();
+        return (user && group && group.adminUser === user._id);
+    },
+
+    loggedIn() {
+        return (Meteor.user() !== null);
+    },
+
+    queryGroup() {
+        return queryGroup.get();
+    },
 });
 Template.admin.events({
+    'click .add-group': function() {
+        // This is very ugly
+        // TODO: Replace with better solution
+        let groupName = prompt('Please enter the new group name', '');
+        groupName.trim();
+
+        if (groupName.length) {
+            Meteor.call('addGroup', groupName, (error, result) => {
+                if (!error) {
+                    page(`/g/${result}`);
+                }
+            });
+        }
+    },
+
     'click .add-item': function() {
         // This is very ugly
         // TODO: Replace with better solution
-        let participant = prompt('Please enter the new name', '');
+        let participantName = prompt('Please enter the name of the new participant', '');
+        participantName.trim();
 
-        Meteor.call('addParticipant', participant);
+        if (participantName.length) {
+            let group = queryGroup.get();
+            Meteor.call('addParticipant', group._id, participantName);
+        }
     },
+
     'click .auto-assign': function() {
-        Meteor.call('autoAssign');
-    }
+        let group = queryGroup.get();
+        Meteor.call('autoAssign', group._id);
+    },
 });
 
 Template.adminList.helpers({
-    participants: function() {
+    participants() {
         return Participants.find({}, { sort: { name: 1 } });
-    }
+    },
 });
-
 Template.adminListItem.onCreated(function() {
     this.reveal = new ReactiveVar(false);
 });
 Template.adminListItem.helpers({
-    freeParticipants: function() {
+    freeParticipants() {
         return Participants.find({ drawn: false }, { sort: { name: 1 } });
     },
-    reveal: function() {
+
+    reveal() {
         return Template.instance().reveal.get();
-    }
+    },
 });
 Template.adminListItem.events({
     'change select': function(event) {
         let participant = this.name;
         let selected = $(event.target).val();
+        let group = queryGroup.get();
 
-        Meteor.call('setDrawnParticipant', participant, selected);
+        Meteor.call('setDrawnParticipant', group._id, participant, selected);
     },
+
     'click .remove-item': function() {
-        Meteor.call('removeParticipant', this.name);
+        let group = queryGroup.get();
+        Meteor.call('removeParticipant', group._id, this.name);
     },
+
     'click .reveal-item': function() {
         let instance = Template.instance();
         instance.reveal.set(!instance.reveal.get());
     },
+
     'click .share-item': function() {
         let $modal = $('.sss-share-item-modal');
         $modal.modal('show');
         let $content = $modal.find('.sss-share-item-modal-content');
-        $content.text('u/' + this._id);
-    }
+        $content.text('p/' + this._id);
+    },
+});
+
+Template.groupList.helpers({
+    groups() {
+        return Groups.find({}, { sort: { name: 1 } });
+    },
+});
+
+Template.groupListItem.helpers({
+    link() {
+        return `/g/${this._id}`;
+    },
+
+    targetDate() {
+        return moment(this.targetDate).format('YYYY-MM-DD HH:mm');
+    },
+});
+Template.groupListItem.events({
+    'click .remove-item': function() {
+        Meteor.call('removeGroup', this._id);
+    },
 });

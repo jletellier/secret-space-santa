@@ -1,29 +1,61 @@
 import { Meteor } from 'meteor/meteor';
-import { Participants } from './collections';
+import { Groups, Participants } from './collections';
+import moment from 'moment';
 
 Meteor.methods({
-    setDrawnParticipant(participant, selected) {
-        clearCorrespondingDrawnAttribute(participant);
+    addGroup(groupName) {
+        let targetDate = moment().set({ 'month': 11, 'date': 24, 'hour': 18 });
 
-        Participants.update({ name: participant }, { $set: { drawnParticipant: selected } });
-        Participants.update({ name: selected }, { $set: { drawn: true } });
+        const groupId = Groups.insert({ 
+            name: groupName, 
+            targetDate: targetDate.format(),
+            adminUser: this.userId,
+        });
+
+        return groupId;
     },
 
-    removeParticipant(participant) {
-        clearCorrespondingDrawnAttribute(participant);
+    removeGroup(groupId) {
+        Participants.remove({ groupId });
+        Groups.remove(groupId);
+    },
+    
+    setDrawnParticipant(groupId, participant, selected) {
+        clearCorrespondingDrawnAttribute(groupId, participant);
+
+        Participants.update(
+            { groupId, name: participant }, 
+            { $set: { drawnParticipant: selected }, 
+        });
+        Participants.update(
+            { groupId, name: selected }, 
+            { $set: { drawn: true },
+        });
+    },
+
+    removeParticipant(groupId, participant) {
+        clearCorrespondingDrawnAttribute(groupId, participant);
 
         // Clear corresponding drawnParticipant field
-        Participants.update({ drawnParticipant: participant }, { $set: { drawnParticipant: null } });
+        Participants.update(
+            { groupId, drawnParticipant: participant }, 
+            { $set: { drawnParticipant: null } 
+        });
 
-        Participants.remove({ name: participant });
+        Participants.remove({ groupId, name: participant });
     },
 
-    addParticipant(participant) {
-        Participants.insert({ name: participant, drawn: false, drawnParticipant: null });
+    addParticipant(groupId, participantName) {
+        Participants.insert({ 
+            name: participantName, 
+            drawn: false, 
+            drawnParticipant: null, 
+            groupId
+        });
     },
 
-    autoAssign() {
-        let participants = Participants.find().fetch();
+    autoAssign(groupId) {
+        let participants = Participants.find({ groupId }).fetch();
         let names = participants.map((obj) => obj.name);
         let assigned;
 
@@ -33,16 +65,20 @@ Meteor.methods({
         while (assigned.map((e, i) => e === names[i]).reduce((a, b) => a + b));
 
         assigned.forEach(function(e, i) {
-            Participants.update({ name: names[i] }, { $set: {
+            Participants.update({ groupId, name: names[i] }, { $set: {
                 drawnParticipant: e,
                 drawn: true
             } });
         });
     },
 
-    getQueryUser(id) {
+    getQueryGroup(id) {
+        return Groups.findOne({ _id: id });
+    },
+
+    getQueryParticipant(id) {
         return Participants.findOne({ _id: id });
-    }
+    },
 });
 
 // Copied from: http://stackoverflow.com/a/2450976
@@ -65,12 +101,12 @@ function shuffle(array) {
     return array;
 }
 
-function clearCorrespondingDrawnAttribute(participant) {
-    let entry = Participants.findOne({ name: participant });
+function clearCorrespondingDrawnAttribute(groupId, participant) {
+    let entry = Participants.findOne({ groupId, name: participant });
     if (entry) {
         let oldSelected = entry.drawnParticipant;
         if (oldSelected) {
-            Participants.update({ name: oldSelected }, { $set: { drawn: false } });
+            Participants.update({ groupId, name: oldSelected }, { $set: { drawn: false } });
         }
     }
 }

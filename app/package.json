@@ -8,6 +8,7 @@
     "@babel/runtime": "^7.1.5",
     "bcrypt": "^3.0.2",
     "meteor-node-stubs": "~0.4.1",
+    "moment": "^2.22.2",
     "page": "^1.11.3"
   }
 }
