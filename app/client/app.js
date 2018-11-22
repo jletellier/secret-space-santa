@@ -1,6 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import page from 'page';
+
 import { Participants } from '../imports/api/collections';
 
 Meteor.subscribe('userData');
@@ -15,15 +17,16 @@ Meteor.setInterval(function() {
 
 let queryUser = new ReactiveVar(null);
 
-Meteor.startup(function() {
-    console.log(location.search.slice(3));
-    let id = location.search.slice(3);
-    if (id.length) {
-        Meteor.call('getQueryUser', id, function(error, result) {
+Meteor.startup(() => {
+    page('/u/:user', (ctx) => {
+        const userId = ctx.params.user;
+        Meteor.call('getQueryUser', userId, function(error, result) {
             queryUser.set(result);
             console.log(result);
         });
-    }
+    });
+
+    page();
 });
 
 Template.statistics.helpers({
@@ -102,6 +105,6 @@ Template.adminListItem.events({
         let $modal = $('.sss-share-item-modal');
         $modal.modal('show');
         let $content = $modal.find('.sss-share-item-modal-content');
-        $content.text('?u=' + this._id);
+        $content.text('u/' + this._id);
     }
 });
