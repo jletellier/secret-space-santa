@@ -5,9 +5,11 @@ import page from 'page';
 import moment from 'moment';
 
 import { Groups, Participants } from '../imports/api/collections';
+import PushManager from '../imports/client/push-manager.js';
 
 let queryGroup = new ReactiveVar(null);
 let queryParticipant = new ReactiveVar(null);
+let pushManager = null;
 
 Meteor.subscribe('userData');
 Meteor.subscribe('groups');
@@ -16,6 +18,17 @@ Tracker.autorun(() => {
     let group = queryGroup.get();
     if (group) {
         Meteor.subscribe('participants', group._id);
+    }
+});
+
+Tracker.autorun(() => {
+    let participant = queryParticipant.get();
+    if (participant) {
+        if (!pushManager) {
+            pushManager = new PushManager();
+        }
+
+        pushManager.activateForParticipant(participant._id);
     }
 });
 

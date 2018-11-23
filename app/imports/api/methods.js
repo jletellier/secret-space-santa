@@ -1,7 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
-import { Groups, Participants } from './collections';
+import { Groups, Participants, VapidKeys, PushSubscriptions } from './collections';
 import { checkGroupCred } from './security';
 
 Meteor.methods({
@@ -116,6 +116,26 @@ Meteor.methods({
 
     getQueryParticipant(id) {
         return Participants.findOne({ _id: id });
+    },
+
+    getVapidKey() {
+        return VapidKeys.findOne({}, { fields: { 'publicKey': 1 } });
+    },
+
+    savePushSubscription(subscriptionString) {
+        PushSubscriptions.insert(JSON.parse(subscriptionString));
+    },
+
+    updatePushSubscription(subscriptionString, participantId) {
+        const endpoint = JSON.parse(subscriptionString).endpoint;
+        const subscription = PushSubscriptions.findOne({ endpoint });
+        
+        if (subscription) {
+            Participants.update(participantId, { $set: { 
+                subscriptionId: subscription._id,
+                lastNotified: moment().toDate(),
+            } });
+        }
     },
 });
 
