@@ -11,6 +11,7 @@ services:
       - MONGO_URL=mongodb://mongo/app
       - ROOT_URL=http://localhost:3000
       - PORT=80
+      - PUSH_INTERVAL_MINUTES=1440
 
   mongo:
     image: mongo:latest

@@ -6,6 +6,9 @@ import moment from 'moment';
 import '../imports/api/server/publish';
 import { VapidKeys, PushSubscriptions, Participants } from '../imports/api/collections.js';
 
+// Environment variable that specifies the interval of push notifications in minutes
+const PUSH_INTERVAL_MINUTES = process.env.PUSH_INTERVAL_MINUTES || 1440;
+
 Meteor.startup(() => {
     // Prepare vapid keys only once
     if (VapidKeys.find().count() === 0) {
@@ -20,12 +23,13 @@ Meteor.startup(() => {
         vapidKeys.privateKey
     );
 
-    Meteor.setInterval(sendPushNotifications, 2000);
+    Meteor.setInterval(sendPushNotifications, 10000);
 });
 
 function sendPushNotifications() {
     let currentDate = moment();
-    let targetDate = moment(currentDate).subtract({ 'minutes': 1 });
+    let targetDate = moment(currentDate).subtract({ 'minutes': PUSH_INTERVAL_MINUTES });
+    console.log(targetDate);
 
     let participants = Participants.find({ 
         subscriptionId: { $ne: null },
