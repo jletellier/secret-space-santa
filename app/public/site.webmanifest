@@ -1,6 +1,7 @@
 {
     "name": "Secret Space Santa",
     "short_name": "Secret Space Santa",
+    "start_url": ".",
     "icons": [
         {
             "src": "/android-chrome-192x192.png",

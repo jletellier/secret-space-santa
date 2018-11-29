@@ -55,14 +55,12 @@ export default class PushManager {
         this.pushManager = this.registration.pushManager;
         this.isInitialized = true;
         this.updateParticipantId();
-        console.log('ServiceWorker, Notification and Push are ready...');
     }
 
     registerServiceWorker() {
         return new Promise((resolve, reject) => {
             navigator.serviceWorker.register('/sw.js').then((registration) => {
                 this.registration = registration;
-                console.log('ServiceWorker registration successful');
                 resolve();
             }, (err) => {
                 console.warn('ServiceWorker registration failed: ', err);
@@ -83,9 +81,7 @@ export default class PushManager {
                     return reject();
                 }
                 
-                console.log('The permission was granted.');
                 return resolve();
-                //navigator.serviceWorker.ready.then(serviceWorkerReady);
             });
         });
     }

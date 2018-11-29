@@ -29,7 +29,6 @@ Meteor.startup(() => {
 function sendPushNotifications() {
     let currentDate = moment();
     let targetDate = moment(currentDate).subtract({ 'minutes': PUSH_INTERVAL_MINUTES });
-    console.log(targetDate);
 
     let participants = Participants.find({ 
         subscriptionId: { $ne: null },
