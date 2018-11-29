@@ -23,12 +23,8 @@ Tracker.autorun(() => {
 
 Tracker.autorun(() => {
     let participant = queryParticipant.get();
-    if (participant) {
-        if (!pushManager) {
-            pushManager = new PushManager();
-        }
-
-        pushManager.activateForParticipant(participant._id);
+    if (participant && !pushManager) {
+        pushManager = new PushManager();
     }
 });
 
@@ -108,6 +104,45 @@ Template.statistics.events({
 Template.settings.helpers({
     queryGroup() {
         return queryGroup.get();
+    },
+
+    queryParticipant() {
+        return queryParticipant.get();
+    },
+
+    isPushLoading() {
+        return (!pushManager || pushManager.isLoading.get());
+    },
+
+    isPushActivated() {
+        return (pushManager && pushManager.isActivated.get());
+    },
+
+    btnClass() {
+        if (!pushManager || pushManager.isLoading.get()) {
+            return "btn-info"
+        }
+        else if (pushManager && pushManager.isActivated.get()) {
+            return "btn-primary"
+        }
+        else {
+            return "btn-danger"
+        }
+    },
+});
+Template.settings.events({
+    'click .toggle-push': function() {
+        if (pushManager && pushManager.isActivated.get()) {
+            pushManager.deactivate();
+        }
+        else {
+            console.log('Activating push...');
+            let participant = queryParticipant.get();
+            if (participant) {
+                pushManager.init();
+                pushManager.setParticipant(participant._id);
+            }
+        }
     },
 });
 

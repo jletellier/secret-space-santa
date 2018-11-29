@@ -15,32 +15,37 @@
 </head>
 
 <body>
-    <div class="sss-heading">
-        <h1>Secret Space Santa</h1>
-    </div>
+    <div class="content">
+        <div class="sss-heading">
+            <h1>Secret Space Santa</h1>
+        </div>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8">
-                <p class="bg-danger">
-                    If you want to contribute to this project, check out 
-                    <a href="https://github.com/jletellier/secret-space-santa">
-                        this Git repository</a>
-                    on Github.
-                </p>
-                
-                {{> participant }}
-                {{> admin }}
-            </div>
-            <div class="col-md-4">
-                {{> statistics }}
-                
-                <div class="bg-warning sss-login">
-                    {{> loginButtons }}
-                    {{> settings }}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    {{> participant }}
+                    {{> admin }}
+                </div>
+                <div class="col-md-4">
+                    {{> statistics }}
+                    
+                    <div class="bg-warning sss-login">
+                        {{> settings }}
+                        {{> loginButtons }}
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="sss-footer">
+        <img src="/christmas-trees-footer.png" class="img-responsive">
+        <p>
+            If you want to contribute to this project, check out 
+            <a href="https://github.com/jletellier/secret-space-santa">
+                this Git repository</a>
+            on Github.
+        </p>
     </div>
 
     <div class="modal fade sss-share-item-modal" tabindex="-1" role="dialog">
@@ -87,8 +92,24 @@
 </template>
 
 <template name="settings">
+    {{# if queryParticipant }}
+        Push Notifications:
+        <button type="button" disabled={{ isPushLoading }}
+            class="btn btn-xs {{ btnClass }} toggle-push" autocomplete="off">
+            {{# if isPushLoading }}
+                Loading...
+            {{ else }}
+                {{# if isPushActivated }}
+                    On
+                {{ else }}
+                    Off
+                {{/ if }}
+            {{/ if }}
+        </button>
+    {{/ if }}
+
     {{# if queryGroup }}
-        <a href="/">Show groups</a>
+        <a href="/">Show Groups</a>
     {{/ if }}
 </template>
 

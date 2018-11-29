@@ -1,17 +1,27 @@
 import { Meteor } from 'meteor/meteor';
+import { ReactiveVar } from 'meteor/reactive-var';
 
 export default class PushManager {
 
     constructor() {
         this.isInitialized = false;
         this.participantId = null;
+        this.isLoading = new ReactiveVar(true);
+        this.isActivated = new ReactiveVar(false);
         this.needsUpdate = false;
 
         if (!this.hasBrowserSupport()) {
             return;
         }
 
-        this.init();
+        const registeredParticipant = localStorage.getItem('registeredPushParticipant');
+        if (registeredParticipant) {
+            this.init();
+            this.setParticipant(registeredParticipant);
+        }
+        else {
+            this.isLoading.set(false);
+        }
     }
 
     hasBrowserSupport() {
@@ -34,6 +44,10 @@ export default class PushManager {
     }
 
     async init() {
+        if (this.isInitialized) {
+            return;
+        }
+
         await this.registerServiceWorker();
         await this.requestNotificationPermission();
         await navigator.serviceWorker.ready;
@@ -111,20 +125,40 @@ export default class PushManager {
     }
 
     updateParticipantId() {
-        if (this.isInitialized && this.participantId && this.needsUpdate) {
+        if (this.isInitialized && this.needsUpdate) {
+            this.isLoading.set(true);
             this.needsUpdate = false;
 
+            if (!this.participantId) {
+                this.subscription.unsubscribe().then(() => {
+                    localStorage.removeItem('registeredPushParticipant');
+                    this.isLoading.set(false);
+                    this.isActivated.set(false);
+                    this.updateParticipantId();
+                });
+
+                return;
+            }
+
             const subscriptionString = JSON.stringify(this.subscription);
-            Meteor.call('updatePushSubscription', subscriptionString, this.participantId, () => {
+            const participantId = this.participantId;
+            Meteor.call('updatePushSubscription', subscriptionString, participantId, () => {
+                localStorage.setItem('registeredPushParticipant', participantId);
+                this.isLoading.set(false);
+                this.isActivated.set(true);
                 this.updateParticipantId();
             });
         }
     }
 
-    activateForParticipant(participantId) {
+    setParticipant(participantId) {
         this.participantId = participantId;
         this.needsUpdate = true;
         this.updateParticipantId();
+    }
+
+    deactivate() {
+        this.setParticipant(null);
     }
 
 }

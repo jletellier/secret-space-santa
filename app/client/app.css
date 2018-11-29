@@ -1,3 +1,16 @@
+html, body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    flex: 1 0 auto;
+}
+
 .sss-heading {
     text-align: center;
     background: #9e0000; /* Old browsers */
@@ -10,6 +23,20 @@
 .sss-heading h1 {
     margin: 0 0 10px 0;
     padding: 15px 2px 10px 2px;
+}
+
+.sss-footer {
+    flex-shrink: 0;
+    text-align: center;
+}
+.sss-footer img {
+    display: block;
+    margin-left: auto;
+	margin-right: auto;
+}
+.sss-footer p {
+    background-color: lightgray;
+    margin: 0;
 }
 
 .sss-login {
