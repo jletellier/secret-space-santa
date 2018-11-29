@@ -19,8 +19,13 @@
     display: block
 }
 
-.sss-user .user-drawn {
-    font-size: 1.5em;
+.sss-user-message .user-drawn {
+    font-size: 1.4em;
+}
+
+.vertical-align-center {
+    display: flex;
+    align-items: center;
 }
 
 .sss-admin h2 {

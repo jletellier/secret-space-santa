@@ -95,10 +95,21 @@
 <template name="participant">
     {{# if queryParticipant }}
         <div class="sss-user bg-warning">
-            <p>Hi <span>{{ queryParticipant.name }}</span>,</p>
-            <p>You are the Secret Santa for: <span class="user-drawn text-success">
-                <strong>{{ queryParticipant.drawnParticipant }}</strong></span>.
-            </p>
+            <div class="row vertical-align-center">
+                <div class="col-xs-4 col-sm-3">
+                    <img src="/android-chrome-512x512.png" width="115"
+                        class="img-responsive" alt="Image of Santa">
+                </div>
+                <div class="sss-user-message col-xs-8 col-sm-9">
+                    <p>Hi <span>{{ queryParticipant.name }}</span>,</p>
+                    <p>This year you are the Secret Santa for:</p>
+                    <p>
+                        <span class="user-drawn text-success">
+                            <strong>{{ queryParticipant.drawnParticipant }}</strong>
+                        </span>
+                    </p>
+                </div>
+            </div>
         </div>
     {{/ if }}
 </template>
