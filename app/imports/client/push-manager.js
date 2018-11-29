@@ -53,11 +53,6 @@ export default class PushManager {
         await navigator.serviceWorker.ready;
 
         this.pushManager = this.registration.pushManager;
-        this.subscription = await this.pushManager.getSubscription();
-        if (!this.subscription) {
-            await this.registerPushSubscribtion();
-        }
-
         this.isInitialized = true;
         this.updateParticipantId();
         console.log('ServiceWorker, Notification and Push are ready...');
@@ -124,31 +119,37 @@ export default class PushManager {
         });
     }
 
-    updateParticipantId() {
-        if (this.isInitialized && this.needsUpdate) {
-            this.isLoading.set(true);
-            this.needsUpdate = false;
+    async updateParticipantId() {
+        if (!this.isInitialized || !this.needsUpdate) {
+            return;
+        }
 
-            if (!this.participantId) {
+        this.isLoading.set(true);
+        this.needsUpdate = false;
+
+        this.subscription = await this.pushManager.getSubscription();
+        if (!this.subscription) {
+            await this.registerPushSubscribtion();
+        }
+
+        const subscriptionString = JSON.stringify(this.subscription);
+        const participantId = this.participantId;
+
+        Meteor.call('updatePushSubscription', subscriptionString, participantId, () => {
+            if (!participantId) {
                 this.subscription.unsubscribe().then(() => {
                     localStorage.removeItem('registeredPushParticipant');
-                    this.isLoading.set(false);
-                    this.isActivated.set(false);
-                    this.updateParticipantId();
                 });
-
-                return;
+                this.isActivated.set(false);
             }
-
-            const subscriptionString = JSON.stringify(this.subscription);
-            const participantId = this.participantId;
-            Meteor.call('updatePushSubscription', subscriptionString, participantId, () => {
+            else {
                 localStorage.setItem('registeredPushParticipant', participantId);
-                this.isLoading.set(false);
                 this.isActivated.set(true);
-                this.updateParticipantId();
-            });
-        }
+            }
+            
+            this.isLoading.set(false);
+            this.updateParticipantId();
+        });
     }
 
     setParticipant(participantId) {

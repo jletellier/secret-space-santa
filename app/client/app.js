@@ -106,8 +106,8 @@ Template.settings.helpers({
         return queryGroup.get();
     },
 
-    queryParticipant() {
-        return queryParticipant.get();
+    showNotifications() {
+        return (queryParticipant.get() && pushManager && pushManager.hasBrowserSupport());
     },
 
     isPushLoading() {

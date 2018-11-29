@@ -25,10 +25,10 @@ Meteor.startup(() => {
 
 function sendPushNotifications() {
     let currentDate = moment();
-    let targetDate = moment(currentDate).subtract({ 'hours': 12 });
+    let targetDate = moment(currentDate).subtract({ 'minutes': 1 });
 
     let participants = Participants.find({ 
-        subscriptionId: { $exists: true },
+        subscriptionId: { $ne: null },
         lastNotified: { $lt: targetDate.toDate() },
     });
 
@@ -40,11 +40,14 @@ function sendPushNotifications() {
         } });
 
         const subscription = PushSubscriptions.findOne(el.subscriptionId);
-        const message = 'Hey Secret Santa, remember to buy a present.';
+        const payload = {
+            message: `Hey ${el.name}, remember to buy a present.`,
+            goToUrl: Meteor.absoluteUrl('p/' + el._id),
+        };
 
         webpush.sendNotification(
             { endpoint: subscription.endpoint, keys: subscription.keys },
-            message,
+            JSON.stringify(payload),
         );
     });
 }

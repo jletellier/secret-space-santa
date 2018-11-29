@@ -130,7 +130,17 @@ Meteor.methods({
         const endpoint = JSON.parse(subscriptionString).endpoint;
         const subscription = PushSubscriptions.findOne({ endpoint });
         
-        if (subscription) {
+        if (subscription && !participantId) {
+            // Remove old subscription
+            Participants.update(
+                { subscriptionId: subscription._id }, 
+                { $set: { subscriptionId: null} },
+            );
+            PushSubscriptions.remove(subscription);
+            return;
+        }
+        else if (subscription) {
+            // Update subscription
             Participants.update(participantId, { $set: { 
                 subscriptionId: subscription._id,
                 lastNotified: moment().toDate(),

@@ -92,7 +92,7 @@
 </template>
 
 <template name="settings">
-    {{# if queryParticipant }}
+    {{# if showNotifications }}
         Push Notifications:
         <button type="button" disabled={{ isPushLoading }}
             class="btn btn-xs {{ btnClass }} toggle-push" autocomplete="off">
