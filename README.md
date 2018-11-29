@@ -1,17 +1,23 @@
 # Secret Space Santa
 
-This application was originally built to manage the upcoming Secret Santa event for the Young ESRIN community in 2015.
+This application was originally built to manage a Secret Santa event for the Young ESRIN community in 2015.
 
-It uses cutting-edge technology to handle the *vast amount of data*, eg.
+The initial development took less than 3 hours. It was just a small exercise to showcase how fast one can prototype an application with Meteor. Don't take this little experiment too seriously!
 
-- [Meteor](https://www.meteor.com/) and
-- [mongoDB](https://www.mongodb.com/).
-                 
-## Important Note
+The application uses
 
-The initial development of the entire application took less than 3 hours. It was just a small exercise to showcase how fast one can prototype an application with Meteor. Don't take this little experiment too seriously!
+- [Meteor](https://www.meteor.com/),
+- [mongoDB](https://www.mongodb.com/), and
+- standardized web technologies.
 
-## Build Instructions (with Docker)
+## Development Instructions
+
+- Install [Meteor](https://www.meteor.com/)
+- Checkout this git repository
+- Run `meteor npm install`
+- Run `meteor` and start hacking
+
+## Deployment with Docker
 
 - Checkout this git repository
 - CD into `app` folder
@@ -25,4 +31,9 @@ The initial development of the entire application took less than 3 hours. It was
 ## Contributing
 
 If you want to contribute to this project, 
-[clone it, make commits and open a pull request](https://guides.github.com/activities/contributing-to-open-source/).
+[clone it, make commits and open a pull request](https://opensource.guide/how-to-contribute/).
+
+List of awesome people that have already contributed:
+
+- [Julien Letellier](https://github.com/jletellier)
+- Luise Lange
