@@ -1,0 +1,10 @@
+{
+    "contribute": "If you want to contribute to this project, check out <a href=\"https://github.com/jletellier/secret-space-santa\">this Git repository</a> on Github.",
+    "push_notifications": "Push Notifications:",
+    "loading": "Loading...",
+    "on": "On",
+    "off": "Off",
+    "hi": "Hey",
+    "secret_santa_for": "This year you are the Secret Santa for:",
+    "please_log_in": "Please login to manage your groups or to create a new group."
+}

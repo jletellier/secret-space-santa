@@ -146,6 +146,24 @@ Template.settings.events({
     },
 });
 
+Template.languageSelection.helpers({
+    isSelected() {
+        const currentLanguage = TAPi18n.getLanguage();
+        return (currentLanguage === this.key) ? 'selected' : '';
+    },
+
+    availableLanuages() {
+        const languages = TAPi18n.getLanguages();
+        return Object.entries(languages).map(([key, value]) => ({ key, name: value.name }));
+    },
+});
+Template.languageSelection.events({
+    'change select': (event) => {
+        const selected = $(event.target).val();
+        TAPi18n.setLanguage(selected);
+    },
+});
+
 Template.participant.helpers({
     queryParticipant() {
         return queryParticipant.get();

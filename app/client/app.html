@@ -33,6 +33,8 @@
                         {{> settings }}
                         {{> loginButtons }}
                     </div>
+
+                    {{> languageSelection }}
                 </div>
             </div>
         </div>
@@ -40,12 +42,7 @@
 
     <div class="sss-footer">
         <img src="/christmas-trees-footer.png" class="img-responsive">
-        <p>
-            If you want to contribute to this project, check out 
-            <a href="https://github.com/jletellier/secret-space-santa">
-                this Git repository</a>
-            on Github.
-        </p>
+        <p>{{{_ "contribute"}}}</p>
     </div>
 
     <div class="modal fade sss-share-item-modal" tabindex="-1" role="dialog">
@@ -93,16 +90,16 @@
 
 <template name="settings">
     {{# if showNotifications }}
-        Push Notifications:
+        {{_ "push_notifications"}}
         <button type="button" disabled={{ isPushLoading }}
             class="btn btn-xs {{ btnClass }} toggle-push" autocomplete="off">
             {{# if isPushLoading }}
-                Loading...
+                {{_ "loading"}}
             {{ else }}
                 {{# if isPushActivated }}
-                    On
+                    {{_ "on"}}
                 {{ else }}
-                    Off
+                    {{_ "off"}}
                 {{/ if }}
             {{/ if }}
         </button>
@@ -111,6 +108,16 @@
     {{# if queryGroup }}
         <a href="/">Show Groups</a>
     {{/ if }}
+</template>
+
+<template name="languageSelection">
+    <div class="bg-warning">
+        <select class="form-control">
+            {{# each availableLanuages }}
+                <option value="{{ key }}" {{ isSelected }}>{{ name }}</option>
+            {{/ each }}
+        </select>
+    </div>
 </template>
 
 <template name="participant">
@@ -122,8 +129,8 @@
                         class="img-responsive" alt="Image of Santa">
                 </div>
                 <div class="sss-user-message col-xs-8 col-sm-9">
-                    <p>Hi <span>{{ queryParticipant.name }}</span>,</p>
-                    <p>This year you are the Secret Santa for:</p>
+                    <p>{{_ "hi"}} <span>{{ queryParticipant.name }}</span>,</p>
+                    <p>{{_ "secret_santa_for"}}</p>
                     <p>
                         <span class="user-drawn text-success">
                             <strong>{{ queryParticipant.drawnParticipant }}</strong>
@@ -172,7 +179,7 @@
                 {{> groupList }}
             {{/ if }}
         {{ else }}
-            <p>Plase log in to manage your groups or to create a new group.</p>
+            <p>{{_ "please_log_in"}}</p>
         {{/ if }}
     </div>
 </template>

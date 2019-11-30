@@ -22,3 +22,4 @@ ian:accounts-ui-bootstrap-3
 npm-bcrypt@0.9.3
 accounts-password@1.5.1
 dynamic-import@0.5.1
+tap:i18n
