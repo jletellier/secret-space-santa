@@ -14,7 +14,6 @@ let pushManager = null;
 
 Tracker.autorun(() => {
     let currentLanguage = Session.get('currentLanguage');
-    console.log(currentLanguage);
     TAPi18n.setLanguage(currentLanguage);
 });
 
