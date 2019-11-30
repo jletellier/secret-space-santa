@@ -5,11 +5,11 @@
     "start": "meteor run"
   },
   "dependencies": {
-    "@babel/runtime": "^7.1.5",
-    "bcrypt": "^3.0.2",
-    "meteor-node-stubs": "~0.4.1",
-    "moment": "^2.22.2",
-    "page": "^1.11.3",
-    "web-push": "^3.3.3"
+    "@babel/runtime": "^7.7.4",
+    "bcrypt": "^3.0.7",
+    "meteor-node-stubs": "^1.0.0",
+    "moment": "^2.24.0",
+    "page": "^1.11.5",
+    "web-push": "^3.4.1"
   }
 }
