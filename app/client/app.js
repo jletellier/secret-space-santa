@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { ReactiveVar } from 'meteor/reactive-var';
+import { Session } from 'meteor/session';
 import page from 'page';
 import moment from 'moment';
 
@@ -10,6 +11,12 @@ import PushManager from '../imports/client/push-manager.js';
 let queryGroup = new ReactiveVar(null);
 let queryParticipant = new ReactiveVar(null);
 let pushManager = null;
+
+Tracker.autorun(() => {
+    let currentLanguage = Session.get('currentLanguage');
+    console.log(currentLanguage);
+    TAPi18n.setLanguage(currentLanguage);
+});
 
 Meteor.subscribe('userData');
 Meteor.subscribe('groups');
@@ -29,6 +36,11 @@ Tracker.autorun(() => {
 });
 
 Meteor.startup(() => {
+    const userLanguage = navigator.languages
+        ? navigator.languages[0]
+        : (navigator.language || navigator.userLanguage);
+    Session.setDefault('currentLanguage', userLanguage.substring(0, 2));
+
     page('/', (ctx) => {
         queryGroup.set(null);
         queryParticipant.set(null);
@@ -148,7 +160,7 @@ Template.settings.events({
 
 Template.languageSelection.helpers({
     isSelected() {
-        const currentLanguage = TAPi18n.getLanguage();
+        const currentLanguage = Session.get('currentLanguage');
         return (currentLanguage === this.key) ? 'selected' : '';
     },
 
@@ -160,7 +172,7 @@ Template.languageSelection.helpers({
 Template.languageSelection.events({
     'change select': (event) => {
         const selected = $(event.target).val();
-        TAPi18n.setLanguage(selected);
+        Session.set('currentLanguage', selected);
     },
 });
 
