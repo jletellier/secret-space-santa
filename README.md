@@ -14,8 +14,9 @@ The application uses
 
 - Install [Meteor](https://www.meteor.com/)
 - Checkout this git repository
-- Run `meteor npm install`
-- Run `meteor` and start hacking
+- CD into `app` folder
+  - Run `meteor npm install`
+  - Run `meteor` and start hacking
 
 ## Deployment with Docker
 
@@ -23,10 +24,10 @@ The application uses
 - CD into `app` folder
   - Run `meteor npm install`
   - Run `meteor build ../build --directory --architecture os.linux.x86_64` (or similar)
+- Optionally, to build a tar file with the meteor build and the Dockerfile (useful to create a docker image from a tar archive)
+  - Run `tar -cvf secret-space-santa-0.5.0.tar build/ Dockerfile`
 - Adjust settings in `docker-compose.yml`
-- Run `docker-compose build`
-- Run `docker-compose pull`
-- Run `docker-compose up`
+- Run docker-compose or similar
 
 ## Contributing
 
