@@ -15,7 +15,10 @@ The application has been rewritten and now uses
 
 ## Development Instructions
 
-
+- Install [Node.js](https://nodejs.org/en)
+- CD into `app` folder
+- Run `npm i`
+- Run `npm run dev`
 
 ## Example: Deployment with Vercel and MongoDB Atlas
 

@@ -1,0 +1,15 @@
+{
+    "name": "Secret Space Santa",
+    "short_name": "Secret Space Santa",
+    "start_url": ".",
+    "icons": [
+        {
+            "src": "/icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#9e0000",
+    "background_color": "#9e0000",
+    "display": "standalone"
+}
